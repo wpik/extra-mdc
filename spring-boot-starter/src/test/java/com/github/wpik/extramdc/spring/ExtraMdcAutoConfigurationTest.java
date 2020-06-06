@@ -13,8 +13,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @SpringBootApplication
@@ -32,10 +31,12 @@ class ExtraMdcAutoConfigurationTest {
 
     @Test
     void autoConfigurationOperational() {
+        assertNull(MDC.get("username"));
         userService.login(
                 new User("Alice"),
                 () -> assertEquals("Alice", MDC.get("username"))
         );
+        assertNull(MDC.get("username"));
     }
 
     @Component

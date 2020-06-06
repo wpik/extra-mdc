@@ -15,6 +15,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 @SpringBootApplication
@@ -24,11 +25,19 @@ class ExtraMdcAspectTest {
 
     @Test
     void mdcField() {
-        libraryService.book("12345", () -> assertEquals("12345", MDC.get("the-isbn")));
+        assertNull(MDC.get("the-isbn"));
+        libraryService.book("12345", () -> {
+            assertNull(MDC.get("isbn"));
+            assertEquals("12345", MDC.get("the-isbn"));
+        });
+        assertNull(MDC.get("the-isbn"));
     }
 
     @Test
     void mdcFieldWithExpression() {
+        assertNull(MDC.get("author"));
+        assertNull(MDC.get("title"));
+        assertNull(MDC.get("author-title"));
         libraryService.book(
                 new Book("H. Sienkiewicz", "Quo Vadis"),
                 () -> {
@@ -37,12 +46,27 @@ class ExtraMdcAspectTest {
                     assertEquals("Quo Vadis", MDC.get("title"));
                 }
         );
+        assertNull(MDC.get("author"));
+        assertNull(MDC.get("title"));
+        assertNull(MDC.get("author-title"));
+    }
+
+    @Test
+    void mdcFieldWithInvalidExpression() {
+        assertNull(MDC.get("field"));
+        libraryService.bookInvalidExpression(
+                new Book("H. Sienkiewicz", "Quo Vadis"),
+                () -> assertEquals("ExtraMdcAspectTest.Book(author=H. Sienkiewicz, title=Quo Vadis)", MDC.get("field"))
+        );
+        assertNull(MDC.get("field"));
     }
 
     @Component
     static class LibraryService {
         @ExtraMdc
-        void book(@MdcField @MdcField("the-isbn") String isbn, Runnable assertions) {
+        void book(
+                //for @MdcField without name, warning is generated
+                @MdcField @MdcField("the-isbn") String isbn, Runnable assertions) {
             assertions.run();
         }
 
@@ -52,7 +76,14 @@ class ExtraMdcAspectTest {
                         @MdcField(name = "author", expression = "author"),
                         @MdcField(name = "title", expression = "title")
                 })
-                @MdcField(name = "author-title", expression = "author + '-' + title2")
+                @MdcField(name = "author-title", expression = "author + '-' + title")
+                        Book book, Runnable assertions) {
+            assertions.run();
+        }
+
+        @ExtraMdc
+        void bookInvalidExpression(
+                @MdcField(name = "field", expression = "foo")
                         Book book, Runnable assertions) {
             assertions.run();
         }

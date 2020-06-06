@@ -17,7 +17,8 @@ public class SpelExpressionResolver implements ExpressionResolver {
             SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
             return expressionToEvaluate.getValue(context, object, String.class);
         } catch (Exception ex) {
-            log.error("Exception occurred while tying to evaluate the SpEL expression [{}]", expression, ex);
+            log.error("Exception occurred while tying to evaluate the SpEL expression [{}]. Details: {}",
+                    expression, ex.getMessage());
             return String.valueOf(object);
         }
     }

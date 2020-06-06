@@ -22,7 +22,10 @@ public class NotesController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ExtraMdc
-    String addNote(@MdcField(name = "author", expression = "author") @RequestBody @Valid Note note) {
+    String addNote(
+            @MdcField(name = "author", expression = "author")
+            @MdcField(name = "title", expression = "title")
+            @RequestBody @Valid Note note) {
         log.debug("Adding new note {}", note);
         return notesService.create(note);
     }

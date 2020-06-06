@@ -1,0 +1,5 @@
+logging:
+  level:
+    com.github.wpik: debug
+  pattern:
+    level: '%5p [%X]'

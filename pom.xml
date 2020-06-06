@@ -60,6 +60,7 @@
 
     <modules>
         <module>aspect</module>
+        <module>spring-boot-starter</module>
     </modules>
 
     <build>

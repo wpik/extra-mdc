@@ -5,6 +5,7 @@ on:
     branches:
       - feature/maven_publish
 
+
 jobs:
   release:
     runs-on: ubuntu-18.04

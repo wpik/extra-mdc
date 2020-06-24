@@ -2,13 +2,15 @@ package io.github.wpik.extramdc.spring;
 
 import io.github.wpik.extramdc.aspect.ExtraMdcAspect;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnClass({ExtraMdcAspect.class, AbstractAutoProxyCreator.class})
+@ConditionalOnProperty(name = "extra-mdc.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnClass({ExtraMdcAspect.class, ProceedingJoinPoint.class})
 @Slf4j
 public class ExtraMdcAutoConfiguration {
     @Bean
